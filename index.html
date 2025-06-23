@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>asese.innotech</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.12.0/cdn.min.js" defer></script>
+  <style>
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 1s ease-in-out both;
+  }
+    
+  </style>
+</head>
+<body class="bg-gray-100">
+
+ <!-- Header -->
+<header class="bg-white shadow p-4 sticky top-0 z-50">
+  <div class="container mx-auto flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-red-700">PT ADHI SELARAS INNOTECH</h1>
+    <nav class="hidden md:flex gap-6 text-sm font-medium text-gray-600">
+      <a href="#home" class="hover:text-blue-600 transition">Home</a>
+      <a href="#produk" class="hover:text-blue-600 transition">Produk</a>
+      <a href="#info" class="hover:text-blue-600 transition">Contact Us</a>
+      <a href="#gallery" class="hover:text-blue-600 transition">Gallery</a>
+
+    </nav>
+    <div class="flex items-center gap-2">
+      <img src="logomerah.png" alt="Logo" class="w-10 h-10 rounded-full border-2 border-red-500 hover:scale-110 transition">
+      <span class="hidden sm:block text-red-600 font-semibold">Asese.Id</span>
+    </div>
+  </div>
+</header>
+
+<!-- Carousel  -->
+<section id="home" class="mt-6 mb-10 px-6" 
+  x-data="{ slide: 1, images: ['cover1new.png', 'cover2neww.png', 'cover3new.png'] }" 
+  x-init="setInterval(() => slide = slide === images.length ? 1 : slide + 1, 10000)">
+  
+  <div class="relative w-full overflow-hidden rounded-xl shadow-md h-[480px]">
+    <template x-for="(img, index) in images" :key="index">
+      <img 
+        x-show="slide === index + 1" 
+        :src="img" 
+        alt="Slide" 
+        class="w-full h-full object-cover absolute inset-0 transition-opacity duration-700" 
+        :class="{ 'opacity-0': slide !== index + 1, 'opacity-100': slide === index + 1 }">
+    </template>
+    <div class="absolute inset-0 flex justify-between items-center px-4">
+      <button 
+        @click="slide = slide === 1 ? images.length : slide - 1" 
+        class="text-white text-2xl font-bold bg-black bg-opacity-50 px-2 py-1 rounded hover:bg-opacity-70 transition">❮</button>
+      <button 
+        @click="slide = slide === images.length ? 1 : slide + 1" 
+        class="text-white text-2xl font-bold bg-black bg-opacity-50 px-2 py-1 rounded hover:bg-opacity-70 transition">❯</button>
+    </div>
+  </div>
+</section>
+
+
+ <section class="container mx-auto px-6 mb-8">
+  <div class="bg-red-100 border border-red-300 p-6 rounded-xl shadow text-center">
+    <h2 class="text-2xl font-bold text-red-700 mb-4">Tentang Kami</h2>
+    <p class="text-gray-700 leading-relaxed">
+      <strong>PT Adhi Selaras Innotech</strong> adalah perusahaan yang bergerak di bidang teknologi informasi dan komunikasi, menyediakan perangkat IT, networking, dan multimedia dengan layanan terbaik untuk pengadaan barang, konsultasi, dan solusi digital. Kami berkomitmen memberikan pelayanan profesional, terpercaya, dan sesuai kebutuhan industri di era transformasi digital.
+    </p>
+  </div>
+</section>
+
+ <!-- Produk dan Pencarian -->
+<main id="produk" class="container mx-auto p-6">
+  <div class="mb-4 flex flex-col sm:flex-row gap-4">
+    <select id="categoryFilter" class="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 w-full sm:w-1/3">
+      <option value="">Semua Kategori</option>
+      <option value="Laptop">Laptop</option>
+      <option value="PC">PC</option>
+      <option value="Aksesoris">Aksesoris</option>
+      <option value="Camera">Camera</option>
+      <option value="Peralatan Kantor">Peralatan Kantor</option>
+    </select>
+    <input id="searchInput" type="text" placeholder="Cari produk..." class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="productGrid"></div>
+</main>
+
+<!-- Modal Produk -->
+<div id="productModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-3xl relative">
+    <button onclick="closeModal()" class="absolute top-2 right-3 text-gray-400 hover:text-red-500 text-xl">&times;</button>
+    <div class="flex flex-col md:flex-row gap-6 items-start">
+      <img id="modalImage" src="" alt="Produk" class="rounded-lg w-full md:w-1/3 max-h-60 object-cover">
+      <div class="flex-1">
+        <h2 id="modalTitle" class="text-2xl font-bold mb-2 text-blue-700"></h2>
+        <p id="modalPrice" class="text-green-600 font-semibold text-lg mb-4"></p>
+        <p id="modalDescription" class="text-gray-700 text-justify leading-relaxed whitespace-pre-line max-h-64 overflow-y-auto pr-2"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <!-- Info Section -->
+  <section id="info">
+    <!-- WhatsApp -->
+    <section class="container mx-auto px-6 py-8">
+      <div class="bg-green-100 border border-green-300 rounded-lg p-6 text-center shadow-md">
+        <h2 class="text-2xl font-bold text-green-800 mb-4">Hubungi Kami via WhatsApp</h2>
+        <p class="text-gray-700 mb-4">Klik ikon di bawah untuk langsung menghubungi kami melalui WhatsApp.</p>
+        <a href="https://wa.me/6281227148915" target="_blank">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" class="w-16 h-16 mx-auto hover:scale-110 transition-transform duration-300">
+        </a>
+      </div>
+    </section>
+
+    <!-- Instagram -->
+    <section class="container mx-auto px-6 py-8">
+      <div class="bg-pink-100 border border-pink-300 rounded-lg p-6 text-center shadow-md">
+        <h2 class="text-2xl font-bold text-pink-700 mb-2">Kunjungi Instagram Kami</h2>
+        <p class="text-gray-700 mb-4">Lihat katalog produk dan update terbaru melalui Instagram kami.</p>
+        <a href="https://www.instagram.com/asese.innotech" target="_blank">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="Instagram" class="w-16 h-16 mx-auto hover:scale-110 transition-transform duration-300">
+        </a>
+      </div>
+    </section>
+
+    <!-- Marketplace Bela -->
+    <section class="container mx-auto px-6 py-8">
+      <div class="bg-orange-100 border border-orange-300 rounded-lg p-6 text-center shadow-md">
+        <h2 class="text-2xl font-bold text-orange-700 mb-2">Belanja di Marketplace Kami</h2>
+        <p class="text-gray-700 mb-4">Klik tombol di bawah ini untuk langsung menuju ke toko kami di GratisOngkir.</p>
+        <a href="https://bela.gratisongkir.id/stores/store-66b1c0a02f0d8" target="_blank">
+          <img src="https://blangkonjateng.jatengprov.go.id/public/front/marketplace/gratisongkir.png" alt="Marketplace" class="w-32 h-16 mx-auto hover:scale-110 transition-transform duration-300">
+        </a>
+      </div>
+    </section>
+
+    <!-- Marketplace SIPLah -->
+    <section class="container mx-auto px-6 py-8">
+      <div class="bg-blue-100 border border-blue-300 rounded-lg p-6 text-center shadow-md">
+        <h2 class="text-2xl font-bold text-blue-700 mb-2">Belanja di Marketplace Kami</h2>
+        <p class="text-gray-700 mb-4">Klik tombol di bawah ini untuk langsung menuju ke toko kami di SIPlah BliBli.</p>
+        <a href="https://siplah.blibli.com/merchant-detail/SPAS-0161" target="_blank">
+          <img src="https://pusatinformasi.siplah.kemdikbud.go.id/hc/article_attachments/8356905358233" alt="Marketplace" class="w-32 h-16 mx-auto hover:scale-110 transition-transform duration-300">
+        </a>
+      </div>
+    </section>
+
+    <!-- Marketplace INAPROC -->
+    <section class="container mx-auto px-6 py-8">
+      <div class="bg-red-100 border border-red-300 rounded-lg p-6 text-center shadow-md">
+        <h2 class="text-2xl font-bold text-red-700 mb-2">Belanja di Marketplace Kami</h2>
+        <p class="text-gray-700 mb-4">Klik tombol di bawah ini untuk langsung menuju PLATFORM kami.</p>
+        <a href="https://katalog.inaproc.id/adhi-selaras-innotech/axioo-interactive-smart-screen-65-inch-a13" target="_blank">
+          <img src="https://yolori.com/wp-content/uploads/2025/02/Logo-Inaproc.png" alt="Marketplace" class="w-32 h-16 mx-auto hover:scale-110 transition-transform duration-300">
+        </a>
+      </div>
+    </section>
+  </section>
+<!-- Gallery Section -->
+<section id="gallery" class="container mx-auto px-6 py-12">
+  <div class="text-center mb-10">
+    <h2 class="text-3xl font-bold text-gray-800 mb-2">Galeri Kegiatan</h2>
+    <p class="text-gray-600">Dokumentasi kegiatan dan produk dari PT Adhi Selaras Innotech</p>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6" x-data x-intersect="$el.classList.add('animate-fade-in')">
+    <template x-for="(img, i) in [
+      '1.jpg', 
+      '2.jpg', 
+      '3.jpg', 
+      '4.jpg', 
+      '5.jpg', 
+      '6.jpg', 
+      '7.jpg', 
+      '8.jpg', 
+      '9.jpg', 
+      '10.jpg', 
+      '11.jpg', 
+      '12.jpg', 
+      '13.jpg', 
+      '14.jpg', 
+      '15.jpg', 
+      '16.jpg', 
+      
+    ]" :key="i">
+      <div class="overflow-hidden rounded-xl shadow hover:shadow-xl transform hover:scale-105 transition duration-500">
+        <img :src="img" alt="Gallery" class="w-full h-60 object-cover">
+      </div>
+    </template>
+  </div>
+</section>
+
+  <!-- Footer -->
+  <footer class="bg-white shadow mt-10 p-4 text-center text-sm text-gray-500">
+    © 2021 - 2025 PT ADHI SELARAS INNOTECH | All rights reserved.
+  </footer>
+
+  <!-- Script Produk -->
+  <script>
+    const products = [
+      {
+        title: "AXIOO MyBook Hype 1",
+        price: "Rp-",
+        desc: "Intel Celeron, 4GB RAM, SSD 128GB, Windows 11, layar 14 inci.",
+        img: "https://cdn.topsellbelanja.com/wp-content/uploads/2024/05/Axioo-Hype-1-N4020-4GB-128GB-gray-gambar-2_C.webp",
+        category: "Laptop"
+      },
+      {
+        title: "AXIOO MyPC Pro N5M (8N2-22) Desktop PC",
+        price: "Rp-",
+        desc: "Prosesor: Intel Core i5-14400\nRAM: 8 GB\nPenyimpanan: 256 GB SSD\nSistem Operasi: Windows 11 Pro\nLayar: 21.5 Inch",
+        img: "https://img.mbizmarket.co.id/products/thumbs/800x800/2023/08/28/d3bd8d8e4a7318db2f843c779c05bba5.jpg",
+        category: "PC"
+      },
+      {
+        title: "AXIOO Pongo 725",
+        price: "Rp-",
+        desc: "Prosesor: Intel Core i7-12650H, RTX 2050, 16GB RAM, 512GB SSD, FHD 144Hz.",
+        img: "https://els.id/wp-content/uploads/2024/01/Pongo-725.png",
+        category: "Laptop"
+      },
+      {
+        title: "INFORCE 1080P Webcam",
+        price: "Rp-",
+        desc: "View Angle: 90-110 degree,Lens: 3.5 mm, Sensor type: CMOS, Antarmuka / Interface: Usb 2.0 / 3.0, Multi-functional base, Plug and Play, Support Beauty (Auto low light correction),Compatible with Windows 10, 8, 7, XP and MacOS X",
+        img: "https://images.tokopedia.net/img/cache/700/VqbcmM/2021/11/12/81212527-53d0-4044-b55e-4db70ffd2463.jpg",
+        category: "Camera"
+      },
+      {
+        title: "BROTHER ADS-3100 Desktop Document Scanner",
+        price: "Rp-",
+        desc: "Scanning Speed: 40 ppm,,Colour / Monochrome: Yes / Yes brother,ADF,(Automatic Document Feeder): Up to 60 sheets (Paper: 20 lb (80 g/m²) A4/Letter size),Memory Capacity: 512 MB,Connectivity: Super Speed USB 3.02-Sided (Duplex) Scan: Yes,Power Consumption: Approx. 23W (Scanning), Approx. 5.4W (Ready), Approx 1.4W (Power Saving), Approx 0.1W (PowerOff)",
+        img: "https://www.brother.co.id/-/media/ap2/products/scanner/ads-3100/ads-3100_f.jpg?rev=69eed8ba5a79478eb6145c39b4c828b5",
+        category: "Peralatan Kantor"
+      },
+     
+      {
+        title: "AXIOO CHROMEBOOK",
+        price: "Rp-",
+        desc: "Axioo Chromebook TKDN+BMP 52,55%, layar 11,6 inch, Intel N4020 Core;2, 1.1Ghz maks 2.80 Ghz cache 4 Mb, Memory 4 GB DDR4, hard drive: 32GB eMMC, HD Camera, USB 3.0 ports, USB type C, Daya/Power 2A 30watt, 15V DC adapter charger, Sound system HD Audio(integrated), Operating System Chrome OS, include CDM (ready to activated chrome education upgrade), Garansi 2 tahun",
+        img: "https://premmiere.co.id/image/cache/catalog/Ariel/AXIOO%20CHROMEBOOK-1100x1100.png",
+        category: "Laptop"
+      },
+       {
+        title: "TOPAZ SignatureGem LCD 1×5 T-L(BK)462",
+        price: "Rp-",
+        desc: "Tempered Glass Surface, Rated to 2 Million Signatures, High-Performance, E/M Digitizer, Active low-power Rugged E/M, Battery-less pen, Resolution & Conversion RateExceeds industry, standards Programmable PPI, Authentication Capability: Forensic quality, SIG data capable of examination and authentication with Topaz software",
+        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvkp2HrIwevGHM0dfR14kfW64gvzKuXoAM7Q&sd",
+        category: "Aksesoris"
+      },
+        {
+        title: "ADVAN EVO-X",
+        price: "Rp-",
+        desc: "Processor Intel N100,Memory 12GB LPDDR5,Storage SSD 512GB,Battery: 5000mAH 7.6V,Windows 11,HD Cameras on front and rear,13 Inch Touch",
+        img: "https://www.advan.id/wp-content/uploads/2025/04/KV-1.png",
+        category: "Laptop"
+      },
+      {
+        title: "Personal Computer ACER AIO C22-1650",
+        price: "Rp-",
+        desc: "Intel Core i3-1115G4,Memory 8GB,Storage SSD 256GB,Display 21,5 inch FHD,Windows 11 + OHS 21",
+        img: "https://www.static-src.com/wcsstore/Indraprastha/images/catalog/full//113/MTA-83746868/acer_acer-c22-1650-all-in-one-pc-aio-i3-1115g4-4gb-512gb-ssd-21-5-fhd-win11_full01.jpg",
+        category: "PC"
+      },
+        {
+        title: "DJI Phantom 4 Pro V2.0",
+        price: "Rp-",
+        desc: "20MP | FOV 84 degree 8.8 mm/24 mm (35 mm format equivalent) f/2.8 – f/11 auto focus at 1 m -~ | 1 inch CMOS",
+        img: "https://officepro.id/image/cache/data/journal2/Catalogue/Image/Products/Technology/DJI/Phantom%204%20Pro%20V2.0-800x800.jpg",
+        category: "Camera"
+      },
+        {
+        title: "DJI Inspire 2",
+        price: "Rp-",
+        desc: "CineCore 2.0 Image Processing | Dual-Battery Design | 2-Axis Stabilized FPV Camera | Compatible with 5.2K Gimbal Cameras | 58 mph Maximum Velocity",
+        img: "https://images.tokopedia.net/img/cache/700/OJWluG/2023/1/5/ade8257d-19f3-42aa-b5fb-e6a856bda13e.jpg",
+        category: "Camera"
+      },
+        {
+        title: "SONY DSC-H300 Camera with 35x Optical Zoom",
+        price: "Rp-",
+        desc: "Tipe 1/2,3″ (7,76mm) Super HAD CCD | 20,1MP | Lensa Sony | Baterai AA",
+        img: "https://jakartacamera.com/wp-content/uploads/2019/08/Untitled-ss1.jpg",
+        category: "Camera"
+      },
+        {
+        title: "VENTION AAC Cable HDMI 4K Gold Plated (Black – 12M)",
+        price: "Rp-",
+        desc: "Resolusi up to 4K@30Hz | 4K picture quality with 3D visual effects | Audio and Video in Sync | Universal Compatibility",
+        img: "https://img.mbizmarket.co.id/products/thumbs/800x800/2024/08/08/3b195bd0f645bd2220288693b7410656.jpg",
+        category: "Aksesoris"
+      },
+          {
+        title: "BASEUS PioneerJoy USB Type C Hub To HDMI 4K60Hz USB 3.0 PD100W Fast Charging",
+        price: "Rp-",
+        desc: "Berfungsi untuk Port Laptop / Tablet / Telepon Tipe C | Mendukung 4K hingga 60Hz | 3 Port USB 3.0 mendukung Transfer Data up to 5Gbps | Saat ponsel / tablet menggunakan hub untuk membaca data atau Tampilan Ekstensi Layar, ponsel / tablet harus mendukung fungsi OTG | Charging Port 100Watt PD | Terdapat 1 Tombol untuk mematikan dan menghidupkan layar HDMI",
+        img: "https://images.tokopedia.net/img/cache/500-square/o3syd0/1997/1/1/957a76cdb2034bd390a71738d959540b~.jpeg",
+        category: "Aksesoris"
+      },
+          {
+        title: "MCDODO OTG Adaptor Converter USB-C to USB-A 3.0 Flashdisk OT-8730",
+        price: "Rp-",
+        desc: "OTG Adapter | Fast Transmission | Break Through Functional Limitations",
+        img: "https://m.media-amazon.com/images/I/41hDav2f3eL._UF350,350_QL50_.jpg",
+        category: "Aksesoris"
+      },
+      
+      
+    ];
+
+    function showDetail(title, price, description, imageUrl) {
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalPrice').textContent = price;
+      document.getElementById('modalDescription').textContent = description;
+      document.getElementById('modalImage').src = imageUrl;
+      document.getElementById('productModal').classList.remove('hidden');
+      document.getElementById('productModal').classList.add('flex');
+    }
+
+    function closeModal() {
+      document.getElementById('productModal').classList.add('hidden');
+      document.getElementById('productModal').classList.remove('flex');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const container = document.getElementById('productGrid');
+      const searchInput = document.getElementById('searchInput');
+      const categoryFilter = document.getElementById('categoryFilter');
+
+      function renderProducts() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedCategory = categoryFilter.value;
+
+        const filtered = products.filter(p => {
+          const matchTitle = p.title.toLowerCase().includes(searchTerm);
+          const matchCategory = selectedCategory === "" || p.category === selectedCategory;
+          return matchTitle && matchCategory;
+        });
+
+        container.innerHTML = filtered.map(p => `
+          <div class="bg-white rounded-xl shadow p-4 cursor-pointer hover:shadow-lg transition" onclick="showDetail('${p.title}', '${p.price}', \`${p.desc}\`, '${p.img}')">
+            <img src="${p.img}" alt="${p.title}" class="rounded-lg mb-3 w-full h-[180px] object-cover">
+            <h2 class="text-lg font-semibold text-blue-600 hover:underline">${p.title}</h2>
+            <p class="text-green-600 font-bold text-xl mt-2">${p.price}</p>
+          </div>
+        `).join('');
+
+        if (filtered.length === 0) {
+          container.innerHTML = `<p class="col-span-full text-center text-gray-500">Produk tidak ditemukan.</p>`;
+        }
+      }
+
+      searchInput.addEventListener('input', renderProducts);
+      categoryFilter.addEventListener('change', renderProducts);
+
+      renderProducts();
+    });
+  </script>
+
+</body>
+</html>
